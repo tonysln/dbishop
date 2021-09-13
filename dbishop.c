@@ -44,8 +44,7 @@ void draw_board(char arr[h][w])
 }
 
 void insert_vals(int valc, struct Points vals[valc], char arr[h][w])
-{
-    // ...
+{ 
     char CHARS[] = " .o+=*BOX@%&#/^SE";
     int counts[h][w];
 
@@ -55,7 +54,6 @@ void insert_vals(int valc, struct Points vals[valc], char arr[h][w])
         }
     }
 
-    // ...
     for (int i = 0; i < valc; i++) {
         int y = vals[i].y;
         int x = vals[i].x;
@@ -80,8 +78,9 @@ void insert_vals(int valc, struct Points vals[valc], char arr[h][w])
 void walk(int valc, struct Points vals[valc], char hex_str[])
 {
     int validx = 1;
+    int str_size = strlen(hex_str);
     // Sisendi läbimine kahe sümboli kaupa
-    for (int i = 0; i < strlen(hex_str); i += 2) {
+    for (int i = 0; i < str_size; i += 2) {
         // Valime sümbolid
         char hex_pair[3];
         strncpy(hex_pair, hex_str+i, 2);
@@ -109,11 +108,21 @@ void walk(int valc, struct Points vals[valc], char hex_str[])
     }
 }
 
-int main() 
+int main(int argc, char *argv[]) 
 {
-    // Sisend -> hex väärtus
-    char hex_str[] = "d433fdc564d3ee9e97ca54213be4bae9";
-    
+    // Olgu sisendi maksimaalne pikkus 32 sümbolit
+    char hex_str[33];
+
+    if (argc == 2) {
+        // Hex väärtus on antud kasutaja poolt
+        // Pikkuse kontroll
+        // ...
+    } else {
+        // Loo juhuslik väärtus
+        // ...
+        strcpy(hex_str, "d433fdc564d3ee9e97ca54213be4bae9\0");
+    }
+
     // Väljundi maatriks, esialgu kõik tühikud
     char arr[h][w];
     for (int i = 0; i < h; i++) {
@@ -123,7 +132,6 @@ int main()
     }
 
     // Sisendi läbimiseks punktide (koordinaatide) arv
-    // ...
     int step_count = strlen(hex_str) * 2 + 1;
     // Koordinaadid 
     struct Points steps[step_count];
