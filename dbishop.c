@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
+#include <fcntl.h>  // open()
+#include <unistd.h> // read()
 
 // Kahe arvu võrdlus
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -115,12 +118,36 @@ int main(int argc, char *argv[])
 
     if (argc == 2) {
         // Hex väärtus on antud kasutaja poolt
-        // Pikkuse kontroll
-        // ...
+        int input_len = strlen(argv[1]);
+
+        if (input_len> 32) {
+            puts("Sisendi pikkus ei saa olla > 32 symbolit.");
+            return (EXIT_FAILURE);
+        }
+        
+        for (int i = 0; i < input_len; i++) {
+            char c = argv[1][i];
+            if (isxdigit(c) == 0) {
+                puts("Sisend peab olema hex value kujul.");
+                return (EXIT_FAILURE);
+            }
+        }
+
+        // strncpy(hex_str, argv[1], 32); // temp!
     } else {
         // Loo juhuslik väärtus
-        // ...
-        strcpy(hex_str, "d433fdc564d3ee9e97ca54213be4bae9\0");
+        int urandom = open("/dev/urandom", O_RDONLY);
+        if (urandom < 0) {
+            puts("Failed to open /dev/urandom.");
+            return (EXIT_FAILURE);
+        }
+
+        ssize_t result = read(urandom, hex_str, sizeof hex_str);
+        if (result < 0) {
+            puts("Failed to read /dev/urandom.");
+            return (EXIT_FAILURE);
+        }
+        printf("%032x\n", hex_str);
     }
 
     // Väljundi maatriks, esialgu kõik tühikud
@@ -130,6 +157,8 @@ int main(int argc, char *argv[])
             arr[i][j] = ' ';
         }
     }
+
+    hex_str[32] = '\0';
 
     // Sisendi läbimiseks punktide (koordinaatide) arv
     int step_count = strlen(hex_str) * 2 + 1;
@@ -148,5 +177,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
 
