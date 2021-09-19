@@ -38,7 +38,7 @@ void draw_board(char arr[h][w])
     for (int i = 0; i < h; i++) {
         printf("%s", "|");
         for (int j = 0; j < w; j++) {
-            printf("%c", arr[i][j]);
+            printf("%c", arr[i][j] < 32 ? ' ' : arr[i][j]);
         }
         puts("|");
     }
@@ -115,12 +115,13 @@ int main(int argc, char *argv[])
 {
     // Olgu sisendi maksimaalne pikkus 32 sümbolit
     char hex_str[33];
+    int hex_len = 32;
 
     if (argc == 2) {
         // Hex väärtus on antud kasutaja poolt
         int input_len = strlen(argv[1]);
 
-        if (input_len> 32) {
+        if (input_len > 32) {
             puts("Sisendi pikkus ei saa olla > 32 symbolit.");
             return (EXIT_FAILURE);
         }
@@ -133,7 +134,8 @@ int main(int argc, char *argv[])
             }
         }
 
-        // strncpy(hex_str, argv[1], 32); // temp!
+        strncpy(hex_str, argv[1], input_len);
+        hex_len = input_len;
     } else {
         // Loo juhuslik väärtus
         int urandom = open("/dev/urandom", O_RDONLY);
@@ -142,12 +144,16 @@ int main(int argc, char *argv[])
             return (EXIT_FAILURE);
         }
 
-        ssize_t result = read(urandom, hex_str, sizeof hex_str);
+        // TODO temp, fix
+        long int rand1;
+        long int rand2;
+        ssize_t result = read(urandom, &rand1, sizeof rand1);
+        result = read(urandom, &rand2, sizeof rand2);
         if (result < 0) {
-            puts("Failed to read /dev/urandom.");
+            puts("Failed to read from /dev/urandom.");
             return (EXIT_FAILURE);
         }
-        printf("%032x\n", hex_str);
+        sprintf(hex_str, "%lx%lx", rand1, rand1);
     }
 
     // Väljundi maatriks, esialgu kõik tühikud
@@ -158,10 +164,10 @@ int main(int argc, char *argv[])
         }
     }
 
-    hex_str[32] = '\0';
+    hex_str[hex_len] = '\0';
 
     // Sisendi läbimiseks punktide (koordinaatide) arv
-    int step_count = strlen(hex_str) * 2 + 1;
+    int step_count = hex_len * 2 + 1;
     // Koordinaadid 
     struct Points steps[step_count];
 

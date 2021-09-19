@@ -7,5 +7,4 @@ Algorithm explanation & analysis:
 
 ### To-do
 
-- Get input from keyboard, validate
 - Support ':' delimiter in input value
