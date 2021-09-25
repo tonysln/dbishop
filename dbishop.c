@@ -138,22 +138,20 @@ int main(int argc, char *argv[])
         hex_len = input_len;
     } else {
         // Loo juhuslik väärtus
+        // TODO
         int urandom = open("/dev/urandom", O_RDONLY);
         if (urandom < 0) {
             puts("Failed to open /dev/urandom.");
             return (EXIT_FAILURE);
         }
 
-        // TODO temp, fix
-        long int rand1;
-        long int rand2;
-        ssize_t result = read(urandom, &rand1, sizeof rand1);
-        result = read(urandom, &rand2, sizeof rand2);
+        int64_t rand;
+        ssize_t result = read(urandom, &rand, sizeof rand);
         if (result < 0) {
             puts("Failed to read from /dev/urandom.");
             return (EXIT_FAILURE);
         }
-        sprintf(hex_str, "%lx%lx", rand1, rand1);
+        sprintf(hex_str, "%llx", rand);
     }
 
     // Väljundi maatriks, esialgu kõik tühikud
