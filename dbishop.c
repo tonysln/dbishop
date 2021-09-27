@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
         }
         // Kopeeri väärtus üle
         strncpy(hex_str, rand_hex, hex_len);
+        free(rand_hex);
     }
 
     // Väljundi maatriks, esialgu kõik tühikud
