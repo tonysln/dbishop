@@ -13,8 +13,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <fcntl.h>  // open()
-#include <unistd.h> // read()
 
 // Kahe arvu võrdlus
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -123,14 +121,14 @@ int main(int argc, char *argv[])
 
         if (input_len > 32) {
             puts("Sisendi pikkus ei saa olla > 32 symbolit.");
-            return (EXIT_FAILURE);
+            return(EXIT_FAILURE);
         }
         
         for (int i = 0; i < input_len; i++) {
             char c = argv[1][i];
             if (isxdigit(c) == 0) {
                 puts("Sisend peab olema hex value kujul.");
-                return (EXIT_FAILURE);
+                return(EXIT_FAILURE);
             }
         }
 
@@ -138,21 +136,20 @@ int main(int argc, char *argv[])
         hex_len = input_len;
     } else {
         // Loo juhuslik väärtus
-        int urandom = open("/dev/urandom", O_RDONLY);
-        if (urandom < 0) {
+        // Salvesta vahepealne väärtus
+        char *rand_hex = malloc((2*sizeof(char)*16)+1);
+        FILE *fp;
+        fp = fopen("/dev/urandom", "r");
+        if (fp == NULL) {
             puts("Failed to open /dev/urandom.");
-            return (EXIT_FAILURE);
+            return(EXIT_FAILURE);
         }
-
-        // TODO
-        int32_t rand;
-        ssize_t result = read(urandom, &rand, sizeof rand);
-        if (result < 0) {
-            puts("Failed to read from /dev/urandom.");
-            return (EXIT_FAILURE);
+        // Salvesta väärtused hex kujul
+        for (int i = 0; i < 16; i++) {
+            sprintf(rand_hex, "%s%02x", rand_hex, fgetc(fp));
         }
-        snprintf(hex_str, hex_len, "%x", rand);
-        // TODO
+        // Kopeeri väärtus üle
+        strncpy(hex_str, rand_hex, hex_len);
     }
 
     // Väljundi maatriks, esialgu kõik tühikud
